@@ -8,9 +8,15 @@ namespace XMLReplacer
     {
         static void Main(string[] args)
         {
+            if (args.Length == 1 && HelpRequired(args[0]))
+            {
+                DisplayHelp();
+                return;
+            }
+
             var path = GetParameter(args, "-source");
             var xmlPath = GetParameter(args, "-xmlPath");
-            var targetFolder = GetParameter(args, "-targetFolder");
+            var targetFolder = GetParameter(args, "-folder");
 
             var sourceXML = new XmlDocument();
             sourceXML.Load(path);
@@ -19,6 +25,22 @@ namespace XMLReplacer
                 throw new InvalidOperationException($"Could not find xml node '{xmlPath}' in file {path}");
 
             ReplaceTargetXmls(targetFolder, xmlPath, sourceNode.InnerXml);
+        }
+
+        private static void DisplayHelp()
+        {
+            Console.WriteLine(@"Replaces entire xml-like config files in folder.
+
+  -source     Specifies the source file which contains xml node
+  -xmlPath    Specifies the xml node path(configuration/runtime)
+  -folder     Specifies the folder which contains config files for replacing
+");
+            Console.WriteLine("");
+        }
+
+        private static bool HelpRequired(string param)
+        {
+            return param == "-h" || param == "--help" || param == "/?";
         }
 
         private static void ReplaceTargetXmls(string targetFolder, string xmlPath, string innerXml)
